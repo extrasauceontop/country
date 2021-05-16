@@ -82,6 +82,6 @@ def scrape():
     log.info("Finished")
 
 
-if __name__ == "__main__":
-    print("here")
-    scrape()
+# if __name__ == "__main__":
+#     print("here")
+scrape()
