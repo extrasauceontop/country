@@ -21,6 +21,7 @@ def fetch_data():
         r = session.get(url, headers=headers)
         soup = BeautifulSoup(r.text, "html.parser")
         loclist = soup.find("store").findAll("item")
+        x = 0
         for loc in loclist:
             location_name = loc.find("location").text
             store_number = loc.find("sortord").text
@@ -30,6 +31,7 @@ def fetch_data():
                 " NEW lunch program, different offerings, custom LTO panel", ""
             )
             if "," in raw_address:
+                x = x+1
                 street_address = raw_address.split(",")[0]
                 city_parts = raw_address.split(",")[1].split(" ")[:-1]
                 city = ""
@@ -39,6 +41,7 @@ def fetch_data():
 
                 print(street_address)
                 print(city)
+                print(x)
                 print("")
             else:
                 city = "<LATER>"
