@@ -3,7 +3,7 @@ from sgscrape.sgwriter import SgWriter
 from sgrequests import SgRequests
 from sglogging import sglog
 import html
-# from sgscrape import sgpostal as parser
+from sgscrape import sgpostal as parser
 from bs4 import BeautifulSoup
 print("here?")
 website = "countrystyle_com"
