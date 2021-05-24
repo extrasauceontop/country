@@ -3,9 +3,9 @@ from sgscrape.sgwriter import SgWriter
 from sgrequests import SgRequests
 from sglogging import sglog
 import html
-from sgscrape import sgpostal as parser
+# from sgscrape import sgpostal as parser
 from bs4 import BeautifulSoup
-print("here?")
+
 website = "countrystyle_com"
 log = sglog.SgLogSetup().get_logger(logger_name=website)
 session = SgRequests()
@@ -29,16 +29,21 @@ def fetch_data():
             raw_address = raw_address.replace(
                 " NEW lunch program, different offerings, custom LTO panel", ""
             )
-            formatted_addr = parser.parse_address_intl(raw_address)
-            street_address = formatted_addr.street_address_1
-            street_address = (
-                street_address + ", " + formatted_addr.street_address_2
-                if formatted_addr.street_address_2
-                else street_address
-            )
-            if formatted_addr.street_address_2:
-                street_address = street_address + ", " + formatted_addr.street_address_2
-            city = formatted_addr.city
+            if "," in raw_address:
+                street_address = raw_address.split(",")[0]
+                city_parts = raw_address.split(",")[1].split(" ").pop(-1)
+                city = ""
+                for part in city_parts:
+                    city = city + part + " "
+                city = city[:-1]
+
+                print(street_address)
+                print(city)
+                print("")
+            else:
+                city = "<LATER>"
+                street_address = "<LATER>"
+
             zip_postal = loc.find("telephone").text
             if not zip_postal:
                 zip_postal = "<MISSING>"
