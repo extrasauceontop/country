@@ -5,7 +5,7 @@ from sglogging import sglog
 import html
 from sgscrape import sgpostal as parser
 from bs4 import BeautifulSoup
-
+print("here?")
 website = "countrystyle_com"
 log = sglog.SgLogSetup().get_logger(logger_name=website)
 session = SgRequests()
