@@ -1,5 +1,5 @@
 from sgscrape.sgrecord import SgRecord
-# from sgscrape.sgwriter import SgWriter
+from sgscrape.sgwriter import SgWriter
 from sgrequests import SgRequests
 from sglogging import sglog
 import html
