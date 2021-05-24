@@ -31,7 +31,7 @@ def fetch_data():
             )
             if "," in raw_address:
                 street_address = raw_address.split(",")[0]
-                city_parts = raw_address.split(",")[1].split(" ").pop(-1)
+                city_parts = raw_address.split(",")[1].split(" ")[:-1]
                 city = ""
                 for part in city_parts:
                     city = city + part + " "
