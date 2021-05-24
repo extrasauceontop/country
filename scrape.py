@@ -24,8 +24,8 @@ def fetch_data():
         for loc in loclist:
             location_name = loc.find("location").text
             store_number = loc.find("sortord").text
-            raw_address = loc.find("address").text.replace(",", "")
-            raw_address = html.unescape(raw_address)
+            raw_address = loc.find("address").text
+            # raw_address = html.unescape(raw_address)
             raw_address = raw_address.replace(
                 " NEW lunch program, different offerings, custom LTO panel", ""
             )
