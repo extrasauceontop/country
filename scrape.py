@@ -19,7 +19,6 @@ def fetch_data():
     if True:
         url = "https://www.countrystyle.com/wp-content/plugins/superstorefinder-wp/ssf-wp-xml.php?wpml_lang=&t=1615704674870"
         r = session.get(url, headers=headers)
-        print(r)
         soup = BeautifulSoup(r.text, "html.parser")
         loclist = soup.find("store").findAll("item")
         for loc in loclist:
@@ -82,6 +81,5 @@ def scrape():
     log.info("Finished")
 
 
-# if __name__ == "__main__":
-print("here")
-scrape()
+if __name__ == "__main__":
+    scrape()
