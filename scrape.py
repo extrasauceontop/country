@@ -45,7 +45,8 @@ def fetch_data():
                 street_address = ""
                 for part in street_address_parts:
                     street_address = street_address + part + " "
-                street_address = street_address.strip()
+                street_address = street_address.split("  ")[0]
+                city = street_address.split("  ")[1] + city
                 print(street_address)
                 print(city)
                 print("")
