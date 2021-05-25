@@ -37,15 +37,18 @@ def fetch_data():
                 city = ""
                 for part in city_parts:
                     city = city + part + " "
-                city = city[:-1]
+                city = city.strip()
 
+            else:
+                city = raw_address.split(" ")[-2]
+                street_address_parts = raw_address.split(" ")[:-2]
+                street_address = ""
+                for part in street_address_parts:
+                    street_address = street_address + part + " "
+                street_address = street_address.strip()
                 print(street_address)
                 print(city)
-                print(x)
                 print("")
-            else:
-                city = "<LATER>"
-                street_address = "<LATER>"
 
             zip_postal = loc.find("telephone").text
             if not zip_postal:
