@@ -46,7 +46,10 @@ def fetch_data():
                 for part in street_address_parts:
                     street_address = street_address + part + " "
                 street_address = street_address.split("  ")[0]
-                city = street_address.split("  ")[1] + city
+                try:
+                    city = street_address.split("  ")[1] + city
+                except Exception:
+                    pass
                 print(street_address)
                 print(city)
                 print("")
