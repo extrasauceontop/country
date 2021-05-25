@@ -26,13 +26,13 @@ def fetch_data():
             location_name = loc.find("location").text
             store_number = loc.find("sortord").text
             raw_address = loc.find("address").text
-            # raw_address = html.unescape(raw_address)
+            raw_address = html.unescape(raw_address)
             raw_address = raw_address.replace(
                 " NEW lunch program, different offerings, custom LTO panel", ""
             )
             if "," in raw_address:
                 x = x+1
-                street_address = raw_address.split(",")[0]
+                street_address = raw_address.split(",")[0].split("  ")[0]
                 city_parts = raw_address.split(",")[1].split(" ")[:-1]
                 city = ""
                 for part in city_parts:
