@@ -53,7 +53,9 @@ def fetch_data():
                 print(street_address)
                 print(city)
                 print("")
-            street_address = street_address.replace("&#44;", "")
+            street_address = html.unescape(street_address)
+            street_address = street_address.split(",")[0]
+
             zip_postal = loc.find("telephone").text
             if not zip_postal:
                 zip_postal = "<MISSING>"
