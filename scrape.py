@@ -25,7 +25,7 @@ def fetch_data():
             location_name = loc.find("location").text
             print(location_name)
             print(loc)
-            store_number = loc.find("storeId").text
+            store_number = loc.find("storeid").text
             raw_address = loc.find("address").text
 
             raw_address = raw_address.replace(
