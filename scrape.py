@@ -24,6 +24,7 @@ def fetch_data():
         for loc in loclist:
             location_name = loc.find("location").text
             print(location_name)
+            print(loc)
             store_number = loc.find("storeId").text
             raw_address = loc.find("address").text
 
