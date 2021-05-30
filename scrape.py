@@ -3,7 +3,6 @@ from sgscrape.sgwriter import SgWriter
 from sgrequests import SgRequests
 from sglogging import sglog
 import html
-# from sgscrape import sgpostal as parser
 from bs4 import BeautifulSoup
 
 website = "countrystyle_com"
@@ -24,14 +23,14 @@ def fetch_data():
         x = 0
         for loc in loclist:
             location_name = loc.find("location").text
-            store_number = loc.find("sortord").text
+            store_number = loc.find("storeId").text
             raw_address = loc.find("address").text
-            # raw_address = html.unescape(raw_address)
+
             raw_address = raw_address.replace(
                 " NEW lunch program, different offerings, custom LTO panel", ""
             )
             if "," in raw_address:
-                x = x+1
+                x = x + 1
                 street_address = raw_address.split(",")[0].split("  ")[0]
                 city_parts = raw_address.split(",")[1].split(" ")[:-1]
                 city = ""
@@ -50,13 +49,10 @@ def fetch_data():
                     city = street_address.split("  ")[1] + city
                 except Exception:
                     pass
-                print(street_address)
-                print(city)
-                print("")
-            street_address = html.unescape(street_address)
-            street_address = street_address.split(",")[0]
 
-            zip_postal = loc.find("telephone").text
+            street_address = html.unescape(street_address)
+            
+            zip_postal = loc.find("telephone").text.split(" (")[0]
             if not zip_postal:
                 zip_postal = "<MISSING>"
             state = loc.find("country").text
@@ -98,5 +94,4 @@ def scrape():
     log.info("Finished")
 
 
-print("hi")
 scrape()
