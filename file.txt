@@ -1,0 +1,14 @@
+{
+  "payload" : {
+    "status" : "success",
+    "session" : null,
+    "messageBean" : {
+      "responseMessage" : "Connection Exception while invoking getNearByStoreDetails",
+      "responseCode" : "LP_STORE_SERVICE_EXP_GET_STORE_DETAILS",
+      "expStack" : null
+    },
+    "errorObject" : null
+  },
+  "classType" : "com.shc.ecom.local.common.response.ErrorResponse",
+  "userRole" : null
+}

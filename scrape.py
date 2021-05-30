@@ -1,99 +1,170 @@
-from sgscrape.sgrecord import SgRecord
-from sgscrape.sgwriter import SgWriter
+import csv
 from sgrequests import SgRequests
-from sglogging import sglog
-import html
-from bs4 import BeautifulSoup
+from sgzip.dynamic import SearchableCountries
+from sgzip.static import static_zipcode_list
 
-website = "countrystyle_com"
-log = sglog.SgLogSetup().get_logger(logger_name=website)
+
 session = SgRequests()
+
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
-    "Accept": "application/json",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36",
+    "content-type": "application/json",
+    "accept": "application/json, text/plain, */*",
 }
 
 
+def write_output(data):
+    with open("data.csv", mode="w") as output_file:
+        writer = csv.writer(
+            output_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL
+        )
+
+        # Header
+        writer.writerow(
+            [
+                "locator_domain",
+                "page_url",
+                "location_name",
+                "street_address",
+                "city",
+                "state",
+                "zip",
+                "country_code",
+                "store_number",
+                "phone",
+                "location_type",
+                "latitude",
+                "longitude",
+                "hours_of_operation",
+            ]
+        )
+        # Body
+        for row in data:
+            writer.writerow(row)
+
+
 def fetch_data():
+    data = []
+    linklist = []
+    week = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+    times = {
+        "32400": "9",
+        "64800": "6",
+        "43200": "12",
+        "61200": "5",
+        "68400": "7",
+        "39600": "11",
+        "57600": "4",
+        "30600": "8.30",
+        "36000": "10",
+        "75600": "9",
+        "34200": "9:30",
+        "46800": "12",
+        "45000": "9:30",
+        "63000": "5:30",
+        "28800": "8",
+        "54000": "3",
+        "0": "12",
+        "50400": "2",
+        "66600": "6:30",
+        "72000": "8",
+        "70200": "7:30",
+        "27000": "7:30",
+        "73800": "8:30",
+        "41400": "11:30",
+        "59400": "4:30",
+    }
+    zips = static_zipcode_list(radius=100, country_code=SearchableCountries.USA)
     if True:
-        url = "https://www.countrystyle.com/wp-content/plugins/superstorefinder-wp/ssf-wp-xml.php?wpml_lang=&t=1615704674870"
-        r = session.get(url, headers=headers)
-        soup = BeautifulSoup(r.text, "html.parser")
-        loclist = soup.find("store").findAll("item")
-        x = 0
-        for loc in loclist:
-            location_name = loc.find("location").text
-            print(location_name)
-            print(loc)
-            store_number = loc.find("storeid").text
-            raw_address = loc.find("address").text
-
-            raw_address = raw_address.replace(
-                " NEW lunch program, different offerings, custom LTO panel", ""
-            )
-            if "," in raw_address:
-                x = x + 1
-                street_address = raw_address.split(",")[0].split("  ")[0]
-                city_parts = raw_address.split(",")[1].split(" ")[:-1]
-                city = ""
-                for part in city_parts:
-                    city = city + part + " "
-                city = city.strip()
-
-            else:
-                city = raw_address.split(" ")[-2]
-                street_address_parts = raw_address.split(" ")[:-2]
-                street_address = ""
-                for part in street_address_parts:
-                    street_address = street_address + part + " "
-                street_address = street_address.split("  ")[0]
-                try:
-                    city = street_address.split("  ")[1] + city
-                except Exception:
+        for zip_code in zips:
+            search_url = "https://api.searshometownstores.com/lps-mygofer/api/v1/mygofer/store/nearby"
+            myobj = {
+                "city": "",
+                "zipCode": str(zip_code),
+                "searchType": "",
+                "state": "",
+                "session": {
+                    "sessionKey": "",
+                    "trackingKey": "",
+                    "appId": "MYGOFER",
+                    "guid": 0,
+                    "emailId": "",
+                    "userRole": "",
+                    "userId": 0,
+                },
+                "security": {"authToken": "", "ts": "", "src": ""},
+            }
+            print(zip_code)
+            try:
+                response = session.post(search_url, json=myobj, headers=headers)
+                loclist = response.json()[
+                    "payload"
+                ]["nearByStores"]
+                if len(loclist) > 0:
                     pass
+            except:
+                continue
+            for loc in loclist:
+                title = loc["storeName"]
+                street = loc["address"]
+                city = loc["city"]
+                state = loc["stateCode"]
+                pcode = loc["zipCode"]
+                phone = loc["phone"]
+                phone = "(" + phone[0:3] + ") " + phone[3:6] + "-" + phone[6:10]
+                store = str(loc["unitNumber"])
+                link = (
+                    "https://www.searshometownstores.com/home/"
+                    + state.lower()
+                    + "/"
+                    + city.lower()
+                    + "/"
+                    + store.replace("000", "")
+                )
+                if link in linklist:
+                    continue
+                linklist.append(link)
+                hourlist = loc["storeDetails"]["strHrs"]
+                hours = ""
+                for day in week:
+                    hours = (
+                        hours
+                        + day
+                        + " "
+                        + times[hourlist[day]["opn"]]
+                        + " AM - "
+                        + times[hourlist[day]["cls"]]
+                        + " PM "
+                    )
+                longt = loc["storeDetails"]["longitude"]
+                lat = loc["storeDetails"]["latitude"]
 
-            street_address = html.unescape(street_address)
-            
-            zip_postal = loc.find("telephone").text.split(" (")[0]
-            if not zip_postal:
-                zip_postal = "<MISSING>"
-            state = loc.find("country").text
-            latitude = loc.find("latitude").text
-            longitude = loc.find("longitude").text
-            phone = loc.find("fax").text
-            if not phone:
-                phone = "<MISSING>"
-
-            yield SgRecord(
-                locator_domain="https://www.countrystyle.com/",
-                page_url="https://www.countrystyle.com/stores/",
-                location_name=location_name,
-                street_address=street_address,
-                city=city,
-                state=state,
-                zip_postal=zip_postal,
-                country_code="CA",
-                store_number=store_number,
-                phone=phone,
-                location_type="<MISSING>",
-                latitude=latitude,
-                longitude=longitude,
-                hours_of_operation="<MISSING>",
-                raw_address=raw_address,
-            )
+                data.append(
+                    [
+                        "https://www.searshometownstores.com/",
+                        link,
+                        title,
+                        street,
+                        city,
+                        state,
+                        pcode,
+                        "US",
+                        store,
+                        phone,
+                        "<MISSING>",
+                        lat,
+                        longt,
+                        hours,
+                    ]
+                )
+        return data
 
 
 def scrape():
-    log.info("Started")
-    count = 0
-    with SgWriter() as writer:
-        results = fetch_data()
-        for rec in results:
-            writer.write_row(rec)
-            count = count + 1
 
-    log.info(f"No of records being processed: {count}")
-    log.info("Finished")
+    data = fetch_data()
+    write_output(data)
 
 
-scrape()
+if __name__ == "__main__":
+    scrape()
