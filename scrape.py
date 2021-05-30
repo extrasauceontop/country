@@ -4,7 +4,7 @@ from sgzip.dynamic import SearchableCountries
 from sgzip.static import static_zipcode_list
 
 
-session = SgRequests()
+session = SgRequests(retry_behavior=False)
 
 headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36",
